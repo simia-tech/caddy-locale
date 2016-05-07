@@ -5,7 +5,8 @@ import (
 	"strings"
 
 	"github.com/mholt/caddy/middleware"
-	"github.com/mholt/caddy/middleware/locale/method"
+
+	"github.com/simia-tech/caddy-locale/method"
 )
 
 // Middleware is a middleware to detect the user's locale.

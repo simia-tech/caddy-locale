@@ -5,8 +5,8 @@ import (
 
 	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
-	"github.com/mholt/caddy/middleware/locale"
-	"github.com/mholt/caddy/middleware/locale/method"
+
+	"github.com/simia-tech/caddy-locale/method"
 )
 
 // Setup configures a new Locale middleware instance.
@@ -22,8 +22,8 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	}, nil
 }
 
-func parseLocale(c *setup.Controller) (*locale.Locale, error) {
-	result := &locale.Locale{
+func parseLocale(c *setup.Controller) (*Middleware, error) {
+	result := &Middleware{
 		AvailableLocales: []string{},
 		Methods:          []method.Method{},
 		PathScope:        "/",

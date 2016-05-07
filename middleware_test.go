@@ -6,7 +6,8 @@ import (
 	"testing"
 
 	"github.com/mholt/caddy/middleware"
-	"github.com/mholt/caddy/middleware/locale/method"
+
+	"github.com/simia-tech/caddy-locale/method"
 )
 
 func TestMiddleware(t *testing.T) {

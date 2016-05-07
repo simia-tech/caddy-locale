@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/mholt/caddy/caddy/setup"
-	"github.com/mholt/caddy/middleware/locale"
-	"github.com/mholt/caddy/middleware/locale/method"
+
+	"github.com/simia-tech/caddy-locale/method"
 )
 
 func TestLocaleParsing(t *testing.T) {
@@ -33,13 +33,13 @@ func TestLocaleParsing(t *testing.T) {
 	for index, test := range tests {
 		controller := setup.NewTestController(test.input)
 
-		middleware, err := Locale(controller)
+		middleware, err := Setup(controller)
 		if err != nil {
 			t.Fatalf("test %d: expected no errors, but got: %v", index, err)
 		}
 
 		handler := middleware(setup.EmptyNext)
-		localeHandler, ok := handler.(*locale.Locale)
+		localeHandler, ok := handler.(*Middleware)
 		if !ok {
 			t.Fatalf("test %d: expected handler to be type Locale, got: %#v", index, handler)
 		}
