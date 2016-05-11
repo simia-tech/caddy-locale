@@ -35,6 +35,10 @@ func (l *Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	}
 	r.Header.Set("Detected-Locale", locale)
 
+	if rr, ok := w.(*middleware.ResponseRecorder); ok && rr.Replacer != nil {
+		rr.Replacer.Set("locale", locale)
+	}
+
 	return l.Next.ServeHTTP(w, r)
 }
 
