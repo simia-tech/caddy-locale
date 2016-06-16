@@ -4,23 +4,23 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mholt/caddy/middleware"
+	"github.com/mholt/caddy/caddyhttp/httpserver"
 
 	"github.com/simia-tech/caddy-locale/method"
 )
 
-// Middleware is a middleware to detect the user's locale.
+// Middleware is a httpserver to detect the user's locale.
 type Middleware struct {
-	Next             middleware.Handler
+	Next             httpserver.Handler
 	AvailableLocales []string
 	Methods          []method.Method
 	PathScope        string
 	Configuration    *method.Configuration
 }
 
-// ServeHTTP implements the middleware.Handler interface.
+// ServeHTTP implements the httpserver.Handler interface.
 func (l *Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	if !middleware.Path(r.URL.Path).Matches(l.PathScope) {
+	if !httpserver.Path(r.URL.Path).Matches(l.PathScope) {
 		return l.Next.ServeHTTP(w, r)
 	}
 
@@ -35,7 +35,7 @@ func (l *Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	}
 	r.Header.Set("Detected-Locale", locale)
 
-	if rr, ok := w.(*middleware.ResponseRecorder); ok && rr.Replacer != nil {
+	if rr, ok := w.(*httpserver.ResponseRecorder); ok && rr.Replacer != nil {
 		rr.Replacer.Set("locale", locale)
 	}
 

@@ -3,26 +3,36 @@ package locale
 import (
 	"strings"
 
-	"github.com/mholt/caddy/caddy/setup"
-	"github.com/mholt/caddy/middleware"
+	"github.com/mholt/caddy"
+	"github.com/mholt/caddy/caddyhttp/httpserver"
 
 	"github.com/simia-tech/caddy-locale/method"
 )
 
-// Setup configures a new Locale middleware instance.
-func Setup(c *setup.Controller) (middleware.Middleware, error) {
-	l, err := parseLocale(c)
-	if err != nil {
-		return nil, err
-	}
-
-	return func(next middleware.Handler) middleware.Handler {
-		l.Next = next
-		return l
-	}, nil
+func init() {
+	caddy.RegisterPlugin("locale", caddy.Plugin{
+		ServerType: "http",
+		Action:     setup,
+	})
 }
 
-func parseLocale(c *setup.Controller) (*Middleware, error) {
+func setup(c *caddy.Controller) error {
+	l, err := parseLocale(c)
+	if err != nil {
+		return err
+	}
+
+	siteConfig := httpserver.GetConfig(c.Key)
+
+	siteConfig.AddMiddleware(func(next httpserver.Handler) httpserver.Handler {
+		l.Next = next
+		return l
+	})
+
+	return nil
+}
+
+func parseLocale(c *caddy.Controller) (*Middleware, error) {
 	result := &Middleware{
 		AvailableLocales: []string{},
 		Methods:          []method.Method{},

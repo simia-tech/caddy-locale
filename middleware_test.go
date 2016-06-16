@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mholt/caddy/middleware"
+	"github.com/mholt/caddy/caddyhttp/httpserver"
 
 	"github.com/simia-tech/caddy-locale/method"
 )
@@ -27,7 +27,7 @@ func TestMiddleware(t *testing.T) {
 
 	for index, test := range tests {
 		locale := Middleware{
-			Next:             middleware.HandlerFunc(contentHandler),
+			Next:             httpserver.HandlerFunc(contentHandler),
 			AvailableLocales: test.availableLocales,
 			Methods:          test.methods,
 			PathScope:        test.pathScope,

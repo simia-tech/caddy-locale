@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mholt/caddy/caddy/setup"
+	"github.com/mholt/caddy"
 
 	"github.com/simia-tech/caddy-locale/method"
 )
@@ -31,26 +31,17 @@ func TestLocaleParsing(t *testing.T) {
 	}
 
 	for index, test := range tests {
-		controller := setup.NewTestController(test.input)
-
-		middleware, err := Setup(controller)
+		localeHandler, err := parseLocale(caddy.NewTestController(test.input))
 		if err != nil {
-			t.Fatalf("test %d: expected no errors, but got: %v", index, err)
-		}
-
-		handler := middleware(setup.EmptyNext)
-		localeHandler, ok := handler.(*Middleware)
-		if !ok {
-			t.Fatalf("test %d: expected handler to be type Locale, got: %#v", index, handler)
+			t.Fatalf("test %d: unexpected error: %s", index, err)
 		}
 
 		if !reflect.DeepEqual(localeHandler.AvailableLocales, test.expectedLocales) {
 			t.Errorf("test %d: expected handler to have available locales %#v, got: %#v", index,
 				test.expectedLocales, localeHandler.AvailableLocales)
 		}
-		if len(localeHandler.Methods) != len(test.expectedMethods) {
-			t.Errorf("test %d: expected handler to have %d detect methods, got: %d", index,
-				len(test.expectedMethods), len(localeHandler.Methods))
+		if am, em := len(localeHandler.Methods), len(test.expectedMethods); em != am {
+			t.Errorf("test %d: expected handler to have %d detect methods, got: %d", index, em, am)
 		}
 	}
 }
