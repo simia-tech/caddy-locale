@@ -31,7 +31,7 @@ func TestLocaleParsing(t *testing.T) {
 	}
 
 	for index, test := range tests {
-		localeHandler, err := parseLocale(caddy.NewTestController(test.input))
+		localeHandler, err := parseLocale(caddy.NewTestController("http", test.input))
 		if err != nil {
 			t.Fatalf("test %d: unexpected error: %s", index, err)
 		}
