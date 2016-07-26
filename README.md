@@ -23,7 +23,7 @@ The defaults are: `methods = [header]`,  `cookie name = locale`, `path scope = /
 
     rewrite {
       ext /
-      to index.{locale}.html index.html
+      to index.{>Detected-Locale}.html index.html
     }
 
     header / Vary "Cookie, Accept-Language"

@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/simia-tech/caddy-locale/method"
 )
@@ -17,7 +19,7 @@ func TestMiddleware(t *testing.T) {
 		pathScope            string
 		path                 string
 		acceptLanguageHeader string
-		expectedLocale       string
+		expectedLocaleHeader string
 	}{
 		{[]string{"en"}, []method.Method{method.Names["header"]}, "/", "/", "", "en"},
 		{[]string{"en", "en-GB"}, []method.Method{method.Names["header"]}, "/", "/", "en-GB,en", "en-GB"},
@@ -34,19 +36,15 @@ func TestMiddleware(t *testing.T) {
 		}
 
 		request, err := http.NewRequest("GET", "/", nil)
-		if err != nil {
-			t.Fatalf("test %d: could not create HTTP request %v", index, err)
-		}
+		require.NoError(t, err, "test #%d", index)
 		request.Header.Set("Accept-Language", test.acceptLanguageHeader)
 
-		recorder := httptest.NewRecorder()
-		if _, err = locale.ServeHTTP(recorder, request); err != nil {
-			t.Fatalf("test %d: could not ServeHTTP %v", index, err)
-		}
+		responseRecorder := httpserver.NewResponseRecorder(httptest.NewRecorder())
 
-		if cl := request.Header.Get("Detected-Locale"); cl != test.expectedLocale {
-			t.Fatalf("test %d: expected detected locale %s, got %s", index, test.expectedLocale, cl)
-		}
+		_, err = locale.ServeHTTP(responseRecorder, request)
+		require.NoError(t, err, "test #%d", index)
+
+		assert.Equal(t, test.expectedLocaleHeader, request.Header.Get("Detected-Locale"), "test #%d", index)
 	}
 }
 

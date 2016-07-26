@@ -1,10 +1,11 @@
 package locale
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/mholt/caddy"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/simia-tech/caddy-locale/method"
 )
@@ -32,16 +33,9 @@ func TestLocaleParsing(t *testing.T) {
 
 	for index, test := range tests {
 		localeHandler, err := parseLocale(caddy.NewTestController("http", test.input))
-		if err != nil {
-			t.Fatalf("test %d: unexpected error: %s", index, err)
-		}
+		require.NoError(t, err, "test #%d", index)
 
-		if !reflect.DeepEqual(localeHandler.AvailableLocales, test.expectedLocales) {
-			t.Errorf("test %d: expected handler to have available locales %#v, got: %#v", index,
-				test.expectedLocales, localeHandler.AvailableLocales)
-		}
-		if am, em := len(localeHandler.Methods), len(test.expectedMethods); em != am {
-			t.Errorf("test %d: expected handler to have %d detect methods, got: %d", index, em, am)
-		}
+		assert.Equal(t, test.expectedLocales, localeHandler.AvailableLocales, "test #%d", index)
+		assert.Equal(t, len(test.expectedMethods), len(localeHandler.Methods), "test #%d", index)
 	}
 }
