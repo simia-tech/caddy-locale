@@ -12,18 +12,19 @@ import (
 
 func TestLocaleParsing(t *testing.T) {
 	tests := []struct {
+		name                  string
 		input                 string
 		expectedLocales       []string
 		expectedMethods       []method.Method
 		expectedPathScope     string
 		expectedConfiguration *method.Configuration
 	}{
-		{`locale en de`, []string{"en", "de"}, []method.Method{method.Names["header"]}, "/", &method.Configuration{}},
-		{`locale en {
+		{"OneLiner", `locale en de`, []string{"en", "de"}, []method.Method{method.Names["header"]}, "/", &method.Configuration{}},
+		{"PathScope", `locale en {
         available de
         path /
       }`, []string{"en", "de"}, []method.Method{method.Names["header"]}, "/", &method.Configuration{}},
-		{`locale en de {
+		{"DetectMethods", `locale en de {
         detect cookie header
         cookie language
         path /test
@@ -31,11 +32,13 @@ func TestLocaleParsing(t *testing.T) {
 			&method.Configuration{CookieName: "language"}},
 	}
 
-	for index, test := range tests {
-		localeHandler, err := parseLocale(caddy.NewTestController("http", test.input))
-		require.NoError(t, err, "test #%d", index)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			localeHandler, err := parseLocale(caddy.NewTestController("http", test.input))
+			require.NoError(t, err)
 
-		assert.Equal(t, test.expectedLocales, localeHandler.AvailableLocales, "test #%d", index)
-		assert.Equal(t, len(test.expectedMethods), len(localeHandler.Methods), "test #%d", index)
+			assert.Equal(t, test.expectedLocales, localeHandler.AvailableLocales)
+			assert.Equal(t, len(test.expectedMethods), len(localeHandler.Methods))
+		})
 	}
 }
