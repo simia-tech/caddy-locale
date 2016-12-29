@@ -45,18 +45,19 @@ func (l *Middleware) defaultLocale() string {
 func (l *Middleware) firstValid(candidates []string) string {
 	for _, candidate := range candidates {
 		candidate = strings.TrimSpace(candidate)
-		if l.isValid(candidate) {
-			return candidate
+		if val := l.validAvailableLocale(candidate); val != "" {
+			return val
 		}
 	}
 	return ""
 }
 
-func (l *Middleware) isValid(locale string) bool {
+func (l *Middleware) validAvailableLocale(locale string) string {
+	locale = strings.ToLower(locale)
 	for _, validLocale := range l.AvailableLocales {
-		if locale == validLocale {
-			return true
+		if locale == strings.ToLower(validLocale) {
+			return validLocale
 		}
 	}
-	return false
+	return ""
 }

@@ -26,6 +26,7 @@ func TestMiddleware(t *testing.T) {
 		{"Multiple", []string{"en", "en-GB"}, []method.Method{method.Names["header"]}, "/", "/", "en-GB,en", "en-GB"},
 		{"Weights", []string{"en", "de"}, []method.Method{method.Names["header"]}, "/", "/", "de,en;q=0.8,en-GB;q=0.6", "de"},
 		{"Path", []string{"en"}, []method.Method{method.Names["header"]}, "/test", "/other/path", "", ""},
+		{"CaseSensitivity", []string{"en", "en-gb"}, []method.Method{method.Names["header"]}, "/", "/", "en-GB,en", "en-gb"},
 	}
 
 	for _, test := range tests {
