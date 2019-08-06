@@ -3,7 +3,7 @@ package locale
 import (
 	"testing"
 
-	"github.com/mholt/caddy"
+	"github.com/caddyserver/caddy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
