@@ -2,32 +2,27 @@ package method
 
 import (
 	"net/http"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCookieParsing(t *testing.T) {
 	cookie := Names["cookie"]
 	configuration := &Configuration{CookieName: "locale"}
 
-	tests := []struct {
-		name            string
-		value           string
-		expectedLocales []string
-	}{
-		{"", "", []string{}},
-		{"locale", "en", []string{"en"}},
-	}
+	testFn := func(name, value string, expectLocales []string) (string, func(*testing.T)) {
+		return name, func(t *testing.T) {
+			request, _ := http.NewRequest("GET", "/", nil)
+			if name != "" {
+				request.Header.Set("Cookie", (&http.Cookie{Name: name, Value: value}).String())
+			}
 
-	for index, test := range tests {
-		request, _ := http.NewRequest("GET", "/", nil)
-		if test.name != "" {
-			request.Header.Set("Cookie", (&http.Cookie{Name: test.name, Value: test.value}).String())
-		}
-
-		locales := cookie(request, configuration)
-		if !reflect.DeepEqual(test.expectedLocales, locales) {
-			t.Fatalf("test %d: expected locales %#v, got %#v", index, test.expectedLocales, locales)
+			locales := cookie(request, configuration)
+			assert.Equal(t, expectLocales, locales)
 		}
 	}
+
+	t.Run(testFn("", "", []string{}))
+	t.Run(testFn("locale", "en", []string{"en"}))
 }
